@@ -5,6 +5,13 @@ import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
 
+// import { useColorScheme } from '@/hooks/useColorScheme';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { Provider } from 'react-redux';
+
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import "@/locales/i18n";
+import { initializeStore, store } from '@/lib/store';
 import { useColorScheme } from '@/hooks/useColorScheme';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
@@ -17,6 +24,10 @@ export default function RootLayout() {
   });
 
   useEffect(() => {
+    initializeStore();
+  }, [])
+  
+  useEffect(() => {
     if (loaded) {
       SplashScreen.hideAsync();
     }
@@ -27,11 +38,35 @@ export default function RootLayout() {
   }
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" />
-      </Stack>
-    </ThemeProvider>
+    <SafeAreaProvider>
+      <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+          <Provider store={store}>
+            <GestureHandlerRootView>
+              <Stack>
+                <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                <Stack.Screen name="+not-found" />
+                <Stack.Screen name="login" options={{ headerShown: false }} />
+                <Stack.Screen
+                  name="settings"
+                  options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                  name="upcoming"
+                  options={{ headerShown: false }}
+                />
+                <Stack.Screen 
+                  name="hotplace"
+                  options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                  name="search"
+                  options={{ headerShown: false, animation: "none", }}
+                />
+              </Stack>
+            </GestureHandlerRootView>
+          </Provider>
+      </ThemeProvider>
+    </SafeAreaProvider>
   );
 }
+

@@ -1,0 +1,56 @@
+{
+    "common": {
+        "showall": "Show All"
+    },
+    "settings": {
+        "title": "Settings",
+        "menu": {
+            "profile_settings": "Profile Settings",
+            "account_settings": "Account Settings",
+            "screen_theme": {
+                "title": "Screen Theme",
+                "light": "Light",
+                "dark": "Dark",
+                "auto": "System"
+            },
+            "language": {
+                "title": "Language",
+                "en": "English",
+                "ko": "Korean",
+                "auto": "System"
+            },
+            "logout": "Logout"
+        }
+    },
+    "home": {
+        "title": "Home",
+        "upcomingevent": {
+            "title": "Upcoming Event",
+            "showall": "Show All"
+        },
+        "hotplace": {
+            "title": "Hot Place",
+            "showall": "Show All"
+        }
+    },
+    "map": {
+        "search": "Search",
+        "filter": {
+            "title": "Filter",
+            "cafe": "Cafe",
+            "restaurant": "Restaurant",
+            "accomodation": "Accomodation",
+            "attraction": "Attraction",
+            "shopping": "Shopping",
+            "culture": "Culture",
+            "festival": "Festival",
+            "bar": "Bar"
+        }
+    },
+    "search": {
+        "title": "Search",
+        "recent": "Recent Search",
+        "clear": "Clear All",
+        "recommend": "Recommend"
+    }
+}

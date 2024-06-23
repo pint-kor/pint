@@ -1,0 +1,56 @@
+{
+    "common": {
+        "showall": "모두 보기"
+    },
+    "settings": {
+        "title": "설정",
+        "menu": {
+            "profile_settings": "프로필 설정",
+            "account_settings": "계정 관리",
+            "screen_theme": {
+                "title": "화면 테마",
+                "light": "밝은 테마",
+                "dark": "어두운 테마",
+                "auto": "시스템 설정에 따름"
+            },
+            "language": {
+                "title": "언어 설정",
+                "en": "영어",
+                "ko": "한국어",
+                "auto": "시스템 설정에 따름"
+            },
+            "logout": "로그아웃"
+        }
+    },
+    "home": {
+        "title": "홈",
+        "upcomingevent": {
+            "title": "다가오는 이벤트",
+            "showall": "모두 보기"
+        },
+        "hotplace": {
+            "title": "핫 플레이스",
+            "showall": "모두 보기"
+        }
+    },
+    "map": {
+        "search": "검색",
+        "filter": {
+            "title": "필터",
+            "cafe": "카페",
+            "restaurant": "식당",
+            "accomodation": "숙박",
+            "attraction": "관광",
+            "shopping": "쇼핑",
+            "culture": "문화",
+            "festival": "축제",
+            "bar": "바"
+        }
+    },
+    "search": {
+        "title": "검색",
+        "recent": "최근 검색어",
+        "clear": "모두 지우기",
+        "recommend": "추천 검색어"
+    }
+}
