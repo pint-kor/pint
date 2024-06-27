@@ -45,12 +45,21 @@
             "culture": "Culture",
             "festival": "Festival",
             "bar": "Bar"
-        }
+        },
+        "searchAtCurrentLocation": "Search at current location"
     },
     "search": {
         "title": "Search",
         "recent": "Recent Search",
         "clear": "Clear All",
-        "recommend": "Recommend"
+        "recommend": "Recommend",
+        "searchresult": {
+            "menu": {
+                "place": "Place",
+                "event": "Event",
+                "user": "User",
+                "all": "All"
+            }
+        }
     }
 }

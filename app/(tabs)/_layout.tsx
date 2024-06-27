@@ -3,25 +3,26 @@ import React from 'react';
 
 import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 import { Colors } from '@/constants/Colors';
-import { useColorScheme } from '@/hooks/useColorScheme';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/lib/store';
+import { useColorScheme } from '@/hooks/useColorScheme';
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
   const user = useSelector((state: RootState) => state.user);
   const param = usePathname();
 
-  if (!user.user && param !== '/map') {
+  if (!user.user) {
     return <Redirect href="/login" />;
   }
 
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].text,
+        tabBarActiveTintColor: Colors[colorScheme ?? 'light']?.text,
         headerShown: false,
         tabBarStyle: {
+          backgroundColor: Colors[colorScheme ?? 'light']?.background,
           padding: 10,
         },
       }}>

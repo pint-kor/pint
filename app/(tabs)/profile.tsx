@@ -4,11 +4,12 @@ import AuthButton from "@/components/auth/KakaoAuthButton";
 import KakaoLoginPage from "@/components/auth/KakaoLoginPage";
 import ProfileCircle from "@/components/user/ProfileCircle";
 import { Colors } from "@/constants/Colors";
+import { useColorScheme } from "@/hooks/useColorScheme";
 import { signOut } from "@/lib/features/auth";
 import { RootState } from "@/lib/store";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
-import { Button, View, useColorScheme } from "react-native";
+import { Button, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useDispatch, useSelector } from "react-redux";
 

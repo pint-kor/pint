@@ -1,48 +1,63 @@
 import BackButton from "@/components/BackButton";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
+import KakaoIframe from "@/components/map/KakaoIframe";
+import KakaoWebView from "@/components/map/KakaoWebView";
+import RecentSearch from "@/components/search/RecentSearch";
+import SearchResultContainer from "@/components/search/SearchResultContainer";
 import { Colors } from "@/constants/Colors";
-import { addRecentSearch, clearRecentSearch, removeRecentSearch } from "@/lib/features/user";
+import { useColorScheme } from "@/hooks/useColorScheme";
+import { addRecentSearch } from "@/lib/features/user";
 import { RootState } from "@/lib/store";
 import { Ionicons } from "@expo/vector-icons";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Redirect, useFocusEffect } from "expo-router";
+import React, { useCallback, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Animated, NativeSyntheticEvent, Pressable, StyleSheet, TextInput, TextInputSubmitEditingEventData, View, useColorScheme } from "react-native";
+import { Platform, StyleSheet, Text, TextInput, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useDispatch, useSelector } from "react-redux";
+import { useDebounceCallback } from "usehooks-ts";
 
-export default function Search() {
+const Search = React.memo(() => {
+    const textInput = useRef<TextInput>(null)
+    const mapRef = useRef<any>(null);
+    const webViewRef = useRef<any>(null);
+
     const insets = useSafeAreaInsets();
-    const colorScheme = useColorScheme() ?? "light";
+    const colorScheme = useColorScheme() ?? "light"
+    const dispatch = useDispatch();
     const { t } = useTranslation();
-    const { history } = useSelector((state: RootState) => state.user)
+
+    const { history, user } = useSelector((state: RootState) => state.user)
     const reversedRecentSearch = useMemo(() => history.recentSearch.slice().reverse(), [history.recentSearch, history])
 
     const [search, setSearch] = useState<string>("")
-    const textInput = useRef<TextInput>(null)
+    const [searchLoading, setSearchLoading] = useState<boolean>(false);
+    const [searchResult, setSearchResult] = useState<any[]>([])
 
-    const dispatch = useDispatch();
+    if (!user) {
+      return <Redirect href="/login" />
+    }
 
-    const onSearch = useCallback(() => {
-        onAddRecentSearch(search)
-    }, [search])
+    const onChangeText = useCallback((text: string) => {
+      setSearch(text)
+      postApi(text)
+    }, [])
+
+    const postApi = useDebounceCallback(useCallback((search: string) => {
+        if (search === "") return
+        
+        const stringfied = JSON.stringify({ type: "KEYWORD_SEARCH", data: {
+          keyword: search
+        }})
+
+        postMessage(stringfied)
+    }, []), 500)
 
     const onAddRecentSearch = useCallback((search: string) => {
-        if (search === "") return
-        dispatch(addRecentSearch(search))
-    }, [dispatch])
-
-    const onClearRecentSearch = useCallback(() => {
-        dispatch(clearRecentSearch())
-    }, [dispatch])
-
-    const onRemoveRecentSearch = useCallback((index: number) => {
-        dispatch(removeRecentSearch(index))
-    }, [dispatch])
-
-    useEffect(() => {
-        textInput.current?.focus()
-    }, [])
+      if (search === "") return
+      dispatch(addRecentSearch(search))
+  }, [dispatch])
 
     const styles = useMemo(() => {
         return StyleSheet.create({
@@ -94,11 +109,51 @@ export default function Search() {
         })
     }, [colorScheme])
 
+    const postMessage = useCallback((message: string) => {
+      if (Platform.OS !== 'web') {
+        webViewRef.current?.postMessage(message);
+        return;
+      }
+      mapRef.current?.contentWindow.postMessage(message, "*");
+    }, [])
+
+    const onMessage = useCallback((event: any) => {
+      try {
+        const { type, data } = event.nativeEvent != undefined ? JSON.parse(event.nativeEvent.data) : JSON.parse(event.data);
+        // console.log(type, data)
+        if (type === "SEARCH_RESULT") {
+          setSearchResult(data);
+        }
+      } catch (e) {
+
+      }
+    }, [])
+
+    useFocusEffect(
+      React.useCallback(() => {
+        textInput.current?.focus()
+        if (Platform.OS !== 'web') return;
+        window.addEventListener("message", onMessage);
+        return () => window.removeEventListener("message", onMessage);
+      }, [])
+    )
+
     return (
       <ThemedView style={{ flex: 1, paddingTop: insets.top, gap: 10 }}>
+        {/* Map */}
+        <View style={{ display: "none" }}>
+          {Platform.OS === "web" && <KakaoIframe ref={mapRef} />}
+          {Platform.OS !== "web" && (
+            <KakaoWebView onMessage={onMessage} ref={webViewRef} />
+          )}
+        </View>
         {/* Header */}
         <View style={styles.header}>
-          <BackButton />
+          {search.length === 0 ? (
+            <BackButton />
+          ) : (
+            <BackButton onPress={() => setSearch("")} />
+          )}
           <View style={styles.headerSearch}>
             <Ionicons
               name="search"
@@ -114,65 +169,27 @@ export default function Search() {
                 color: Colors[colorScheme].text,
               }}
               value={search}
-              onChangeText={setSearch}
-              onSubmitEditing={onSearch}
+              onChangeText={onChangeText}
+              onBlur={() => onAddRecentSearch(search)}
             />
           </View>
         </View>
         {/* Recent Search */}
-        {reversedRecentSearch.length !== 0 && (
-          <View style={styles.recentSearchContainer}>
-            {/* Recent Search Header */}
-            <View style={styles.recentSearchHeader}>
-              <ThemedText style={{ fontSize: 13, fontWeight: 700 }}>
-                {t("search.recent")}
-              </ThemedText>
-              <Pressable onPress={onClearRecentSearch}>
-                <ThemedText style={{ fontSize: 13, fontWeight: 400 }}>
-                  {t("search.clear")}
-                </ThemedText>
-              </Pressable>
-            </View>
-            {/* Recent Search Tags */}
-            <Animated.ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-            >
-              <View style={styles.recentSearchTagContainer}>
-                {reversedRecentSearch.map((item, index) => (
-                  <View key={index} style={styles.recentSearchTag}>
-                    <ThemedText
-                      style={{ fontSize: 12, fontWeight: 200 }}
-                      onPress={() => {
-                        setSearch(item);
-                        onAddRecentSearch(item);
-                      }}
-                    >
-                      {item}
-                    </ThemedText>
-                    <Ionicons
-                      name="close"
-                      size={18}
-                      color={Colors[colorScheme].text}
-                      onPress={() =>
-                        onRemoveRecentSearch(
-                          reversedRecentSearch.length - index - 1
-                        )
-                      }
-                    />
-                  </View>
-                ))}
-              </View>
-            </Animated.ScrollView>
-          </View>
-        )}
         {/* Search Recommend */}
-        <View style={styles.recommendSearchContainer}>
-          <ThemedText style={{ fontSize: 13, fontWeight: 700 }}>
-            {t("search.recommend")}
-          </ThemedText>
-        </View>
+        {search === "" ? (
+          <>
+            <RecentSearch search={search} setSearch={onChangeText} />
+            <View style={styles.recommendSearchContainer}>
+              <ThemedText style={{ fontSize: 13, fontWeight: 700 }}>
+                {t("search.recommend")}
+              </ThemedText>
+            </View>
+          </>
+        ) : (
+          <SearchResultContainer searchResult={searchResult} />
+        )}
       </ThemedView>
     );
-}
+})
 
+export default Search;

@@ -1,11 +1,12 @@
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { Colors } from "@/constants/Colors";
+import { useColorScheme } from "@/hooks/useColorScheme";
 import { __developement_logout } from "@/lib/features/user";
 import { Ionicons } from "@expo/vector-icons";
 import { router, useNavigation } from "expo-router";
 import { useTranslation } from "react-i18next";
-import { Pressable, PressableProps, StyleSheet, View, useColorScheme } from "react-native";
+import { Pressable, PressableProps, StyleSheet, View } from "react-native";
 import Animated from "react-native-reanimated";
 import { useDispatch } from "react-redux";
 

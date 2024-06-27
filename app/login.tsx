@@ -25,12 +25,12 @@ export default function Login() {
     return (
         <ThemedView style={{flex: 1, paddingTop: insets.top, alignItems: 'center', justifyContent: 'center'}}>
             <Pressable onPress={devLogin}>
-                <ThemedText type="title">Login</ThemedText>
+                <ThemedText type="title">임시 로그인</ThemedText>
             </Pressable>
-            <Pressable onPress={() => setKakaoModal(true)}>
+            {/* <Pressable onPress={() => setKakaoModal(true)}>
                 <ThemedText type="title">Kakao Login</ThemedText>
             </Pressable>
-            {kakaoModal && <KakaoLoginPage />}
+            {kakaoModal && <KakaoLoginPage />} */}
         </ThemedView>
     )
 }

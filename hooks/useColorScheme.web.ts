@@ -8,5 +8,6 @@ import { useSelector } from "react-redux";
 
 // but can be achieved using a styling library like Nativewind.
 export function useColorScheme() {
-  return 'light';
+  const theme = useSelector((state: RootState) => state.setup.theme);
+  return theme;
 }

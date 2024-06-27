@@ -22,7 +22,7 @@ export const initializeStore = async () => {
     const theme = data[1][1];
 
     store.dispatch(setLanguage(language ?? getLocales()[0]?.languageCode ?? "en"));
-    store.dispatch(setTheme(theme ?? "auto"));
+    store.dispatch(setTheme(theme ?? "light"));
 }
 
 export type RootState = ReturnType<typeof rootReducer>;

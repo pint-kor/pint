@@ -1,75 +1,63 @@
 
-import { useCallback, useMemo, useRef, useState } from "react";
-import { Animated, Dimensions, Pressable, StyleSheet, Text, View, useColorScheme } from "react-native";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Dimensions, Platform, Pressable, StyleSheet, Text, View } from "react-native";
 import WebView from "react-native-webview";
 import * as Location from "expo-location";
 import { FontAwesome5, FontAwesome6, Ionicons } from "@expo/vector-icons";
 import { Colors } from "@/constants/Colors";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
-import { router } from "expo-router";
+import { router, useFocusEffect } from "expo-router";
 import { ThemedText } from "../ThemedText";
+import SearchFilter, { CategoryCodes } from "./SearchFilter";
 
-const EXPO_PUBLIC_KAKAO_MAP_JAVASCRIPT_KEY = process.env.EXPO_PUBLIC_KAKAO_MAP_JAVASCRIPT_KEY
+import MapBottomSheet from "./MapBottomSheet";
+import KakaoIframe from "./KakaoIframe";
+import { useColorScheme } from "@/hooks/useColorScheme";
+import KakaoWebView from "./KakaoWebView";
 
-const html = `
-<html>
-    <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <script type="text/javascript" src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=${EXPO_PUBLIC_KAKAO_MAP_JAVASCRIPT_KEY}"></script> 
-    </head>
-    <body>
-        <div id="map" style="width:100vw;height:100vh;"></div>    
-
-        <script type="text/javascript">
-          const container = document.getElementById('map');
-          const options = { //지도를 생성할 때 필요한 기본 옵션
-              center: new kakao.maps.LatLng(33.450701, 126.570667), //지도의 중심좌표.
-              level: 3 //지도의 레벨(확대, 축소 정도)
-          };
-          var map = new kakao.maps.Map(container, options);
-          const geocoder = new kakao.maps.services.Geocoder();
-        </script>
-    </body>
-</html>   
-`;
-
-const runFirst = `
-  alert("hello world")
-
-  const listener = (event) => {
-    const { data, type } = JSON.parse(event.data);
-
-    switch (type) {
-      case 'test': {
-        console.log('test', data);
-        break;
-      }
-      case 'CURRENT_LOCATION': {
-        const { latitude, longitude } = data;
-        
-        const moveLatLon = new kakao.maps.LatLng(latitude, longitude);
-        map.panTo(moveLatLon)
-
-        break;
-      }
-    }
-  }
-
-  /** android */
-  document.addEventListener('message', listener);
-  
-  /** ios */
-  window.addEventListener('message', listener);
-`;
+const EXPO_PUBLIC_PINT_MAP = process.env.EXPO_PUBLIC_PINT_MAP ?? ""
 
 export default function KakaoMap() {
     const { t } = useTranslation();
     const insets = useSafeAreaInsets();
     const colorScheme = useColorScheme() ?? 'light';
-    const webView = useRef<WebView>(null);
-    const [locationPermission, setLocationPermission] = useState(false);
 
+    const webView = useRef<WebView>(null);
+    const iframeView = useRef<HTMLIFrameElement>(null);
+    const [locationPermission, setLocationPermission] = useState(false);
+    const [filters, setFilters] = useState<string[]>([]);
+    const [selectedPlace, setSelectedPlace] = useState<any>(null);
+    
+    /** 웹뷰 통신 */
+    const postMessage = useCallback((message: string) => {
+      if (Platform.OS !== 'web') {
+        webView.current?.postMessage(message)
+        return;
+      }
+      iframeView.current?.contentWindow?.postMessage(message, "*");
+    }, [])
+
+    // pint-map 과 통신
+    const onMessage = useCallback((event: any) => {
+      try {
+        const { type, data } = event.nativeEvent != undefined ? JSON.parse(event.nativeEvent.data) : JSON.parse(event.data);
+        console.log("HELLO")
+        if (type === 'CLICK_MARKER') {
+          setSelectedPlace(data);
+        }
+      } catch (e) {
+
+      }
+    }, [])
+
+    useFocusEffect(React.useCallback(() => {
+      if (Platform.OS !== 'web') return;
+      window.addEventListener('message', onMessage)
+      return () => window.removeEventListener('message', onMessage)
+    }, []))
+
+    // 현재 위치로 이동
     const onCurrentLocation = useCallback(async () => {
       if (!locationPermission) {
         let { status } = await Location.requestForegroundPermissionsAsync();
@@ -86,16 +74,41 @@ export default function KakaoMap() {
         location = await Location.getCurrentPositionAsync({});
       }
 
-      webView.current?.postMessage(
-        JSON.stringify({
-          type: 'CURRENT_LOCATION',
-          data: {
-            latitude: location.coords.latitude,
-            longitude: location.coords.longitude,
-          }
-        })
-      )
+      const stringfied = JSON.stringify({
+        type: 'CURRENT_LOCATION',
+        data: {
+          lat: location.coords.latitude,
+          lng: location.coords.longitude,
+        }
+      })
+      
+      postMessage(stringfied);
     }, [locationPermission]);
+
+    // 카테고리로 검색
+    const onCategorySearch = useCallback(() => {
+      const codes = [];
+
+      for (const filter of filters) {
+        const category: string = CategoryCodes[filter];
+        
+        if (!category) {
+          continue;
+        }
+
+        codes.push(category);
+      }
+
+      const stringfied = JSON.stringify({
+        type: 'CATEGORY_SEARCH',
+        data: {
+          categories: codes,
+          radius: 5000,
+        }
+      })
+
+      postMessage(stringfied);
+    }, [filters])
 
     const onSearch = useCallback(() => {
       router.push("/search")
@@ -119,7 +132,7 @@ export default function KakaoMap() {
         top: 10 + insets.top,
         left: 20,
         zIndex: 100,
-        width: Dimensions.get('screen').width - 40,
+        width: Dimensions.get('window').width - 40,
         gap: 10
       },
       searchBarContainer: {
@@ -132,15 +145,27 @@ export default function KakaoMap() {
       },
       searchFilterContainer: {
         flexDirection: 'row',
-        gap: 10,
-        padding: 5,
-        // zIndex: 100,
+        gap: 8,
+        padding: 0,
         alignItems: 'center',
+      },
+      searchAtCurrentLocationContainer: {
+        justifyContent: "center",
+        alignItems: "center",
+      },
+      centeredView: {
+        backgroundColor: Colors[colorScheme].background,
+        borderRadius: 20,
+        gap: 10,
+        paddingHorizontal: 12,
+        paddingVertical: 2,
+        flexDirection: 'row',
+        alignItems: "center",
       }
     }), [colorScheme]);
 
     return (
-      <View style={{ flex: 1 }}>
+      <View style={{ flex: 1, }}>
         <View style={{ flex: 1 }}>
           {/* Search Component */}
           <View style={styles.searchContainer}>
@@ -154,18 +179,20 @@ export default function KakaoMap() {
               <Text style={{ color: "gray" }}>{t("map.search")}</Text>
             </Pressable>
             {/* Search Filter */}
-            <Animated.ScrollView horizontal>
-              <View style={styles.searchFilterContainer}>
-                <FilterTag isMenu title={t("map.filter.title")} />
-                <FilterTag title={t("map.filter.cafe")} />
-                <FilterTag title={t("map.filter.restaurant")} />
-                <FilterTag title={t("map.filter.accomodation")} />
-                <FilterTag title={t("map.filter.attraction")} />
-                <FilterTag title={t("map.filter.shopping")} />
-                <FilterTag title={t("map.filter.culture")} />
-                <FilterTag title={t("map.filter.bar")} />
+            <SearchFilter filters={filters} setFilter={setFilters} />
+            {/* Search At Current Location */}
+            <Pressable style={styles.searchAtCurrentLocationContainer} onPress={onCategorySearch}>
+              <View style={styles.centeredView}>
+                <FontAwesome5
+                  name="map-marker-alt"
+                  size={14}
+                  color={Colors[colorScheme].text}
+                />
+                <ThemedText style={{ fontSize: 10, fontWeight: 800 }}>
+                  {t("map.searchAtCurrentLocation")}
+                </ThemedText>
               </View>
-            </Animated.ScrollView>
+            </Pressable>
           </View>
           {/* Current Location Component */}
           <Pressable onPress={onCurrentLocation} style={styles.currentLocation}>
@@ -176,49 +203,11 @@ export default function KakaoMap() {
             />
           </Pressable>
           {/* Kakao Map */}
-          <WebView
-            originWhitelist={["*"]}
-            source={{ html: html }}
-            style={{
-              flex: 1,
-              position: "absolute",
-              left: -10,
-              top: -10,
-              width: Dimensions.get("screen").width + 20,
-              height: Dimensions.get("screen").height + 20,
-            }}
-            onMessage={({ nativeEvent }) => {
-              const { type, data } = JSON.parse(nativeEvent.data);
-              console.log(type, data);
-            }}
-            ref={webView}
-            injectedJavaScript={runFirst}
-          />
+          {Platform.OS === 'web' && <KakaoIframe ref={iframeView} />}
+          {Platform.OS !== 'web' && <KakaoWebView onMessage={onMessage} ref={webView} />}
         </View>
+        {selectedPlace && <MapBottomSheet place={selectedPlace} setPlace={setSelectedPlace} />}
       </View>
     );
-}
-
-function FilterTag({ title, onPress, isMenu=false }: { title: string, onPress?: () => void, isMenu?: boolean }) {
-  const color = useColorScheme() ?? 'light';
-
-  const styles = useMemo(() => StyleSheet.create({
-    container: {
-      flexDirection: 'row',
-      gap: 5,
-      paddingHorizontal: 10,
-      paddingVertical: 1,
-      backgroundColor: Colors[color].background,
-      borderRadius: 20,
-      alignItems: 'center',
-    }
-  }), [color]);
-
-  return (
-    <Pressable style={styles.container} onPress={onPress}>
-      {isMenu && <FontAwesome5 name="filter" size={16} color={Colors[color].text} />}
-      <ThemedText style={{fontSize: 12, fontWeight: 800}}>{title}</ThemedText>
-    </Pressable>
-  )
 }
 

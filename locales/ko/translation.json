@@ -45,12 +45,21 @@
             "culture": "문화",
             "festival": "축제",
             "bar": "바"
-        }
+        },
+        "searchAtCurrentLocation": "현재 위치에서 검색"
     },
     "search": {
         "title": "검색",
         "recent": "최근 검색어",
         "clear": "모두 지우기",
-        "recommend": "추천 검색어"
+        "recommend": "추천 검색어",
+        "searchresult": {
+            "menu": {
+                "place": "장소",
+                "event": "이벤트",
+                "user": "사용자",
+                "all": "모두"
+            }
+        }
     }
 }

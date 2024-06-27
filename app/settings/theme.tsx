@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/lib/store";
 import { ThemeType, setTheme } from "@/lib/features/setup";
 import { SettingButton } from ".";
+import { Platform } from "react-native";
 
 export default function ScreenTheme() {
     const { t } = useTranslation();
@@ -28,11 +29,12 @@ export default function ScreenTheme() {
             checked={theme === "dark"}
             onPress={() => dispatchTheme("dark")}
           />
-          <SettingButton
+          {Platform.OS !== "web" && (
+            <SettingButton
             title={t("settings.menu.screen_theme.auto")}
             checked={theme === "auto"}
             onPress={() => dispatchTheme("auto")}
-          />
+          />)}
         </Animated.ScrollView>
       </ThemedView>
     );

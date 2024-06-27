@@ -2,10 +2,11 @@
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { Colors } from "@/constants/Colors";
+import { useColorScheme } from "@/hooks/useColorScheme";
 import { Ionicons } from "@expo/vector-icons";
 import { Stack, useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
-import { Text, View, useColorScheme } from "react-native";
+import { Text, View } from "react-native";
 import { NativeStackNavigationOptions } from "react-native-screens/lib/typescript/native-stack/types";
 
 export default function SettingLayout() {

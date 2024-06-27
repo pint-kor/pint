@@ -1,13 +1,16 @@
 import { Colors } from "@/constants/Colors";
+import { useColorScheme } from "@/hooks/useColorScheme";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
-import { View, useColorScheme } from "react-native";
+import { View } from "react-native";
 
-const BackButton = () => {
+const BackButton = ({ onPress }: { onPress?: () => void }) => {
     const colorScheme = useColorScheme();
 
-    const onPress = () => {
-        router.dismiss();
+    if (!onPress) {
+        onPress = () => {
+            router.dismiss();
+        }
     }
 
     return (
