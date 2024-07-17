@@ -5,9 +5,22 @@ import ShowAll from "./ShowAll";
 import ContentLoader from "react-content-loader";
 import { Rect } from "react-native-svg";
 import { SkeletonLoader } from "../SkeletonLoader";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@/lib/store";
+import { searchFestival } from "@/lib/features/event";
 
 export default function HotPlace() {
     const { t } = useTranslation();
+    const dispatch = useDispatch<AppDispatch>();
+    const { events } = useSelector((state: RootState) => state.event)
+ 
+    console.log(events)
+
+    useEffect(() => {
+      // dispatch(searchFestival({ startDate: "20240705 "}))
+    }, [])
+
     return (
       <View>
         <CommonTitle

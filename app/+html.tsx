@@ -12,8 +12,6 @@ export default function Root({ children }: PropsWithChildren) {
         <meta charSet="utf-8" />
         <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-        
-        <script type="text/javascript" src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=e8e31af7dfea0714b5c4dc9d27f7392a&libraries=services,clusterer,drawing"></script> 
         {/*
           Disable body scrolling on web. This makes ScrollView components work closer to how they do on native.
           However, body scrolling is often nice to have for mobile web. If you want to enable it, remove this line.

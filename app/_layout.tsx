@@ -50,10 +50,9 @@ export default function RootLayout() {
               <Stack.Screen name="settings" options={{ headerShown: false }} />
               <Stack.Screen name="upcoming" options={{ headerShown: false }} />
               <Stack.Screen name="hotplace" options={{ headerShown: false }} />
-              <Stack.Screen
-                name="search"
-                options={{ headerShown: false, animation: "none" }}
-              />
+              <Stack.Screen name="post" options={{ headerShown: false, headerTitle: "" }} />
+              <Stack.Screen name="notification" options={{ headerShown: false }} />
+              <Stack.Screen name="search" options={{ headerShown: false }} />
             </Stack>
           </GestureHandlerRootView>
         </ThemeProvider>

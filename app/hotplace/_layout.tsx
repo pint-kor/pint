@@ -13,7 +13,7 @@ export default function HotPlaceLayout() {
                 headerStyle: {
                     backgroundColor: Colors[colorScheme ?? "light"].background,
                 },
-                headerLeft: () => <BackButton />
+                headerLeft: () => <BackButton />,
             }} />
         </Stack>
     )

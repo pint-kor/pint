@@ -1,20 +1,29 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { ThemedView } from "../ThemedView";
 import { ThemedText } from "../ThemedText";
-import { Animated, Pressable, StyleSheet, View } from "react-native";
+import { Animated, FlatList, Pressable, StyleSheet, View } from "react-native";
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { useTranslation } from "react-i18next";
 import PlaceContainer from "./PlaceContainer";
+import { useSelector } from "react-redux";
+import { RootState } from "@/lib/store";
+import { FlashList } from "@shopify/flash-list";
 
 type Menu = "all" | "place" | "event" | "user";
 
-export default function SearchResultContainer({
-  searchResult,
-}: {
-  searchResult: any[];
-}) {
+export default function SearchResultContainer() {
   const [menu, setMenu] = useState<Menu>("all");
+  const { searchResult } = useSelector((state: RootState) => state.search)
+
+  const result: any[] = useMemo(() => {
+    const ret = []
+      if (menu === "all" || menu === "place") {
+        ret.push("sticky_header_place")
+        ret.push(...searchResult);
+      }
+      return ret;
+  }, [searchResult, menu])
 
   return (
     <ThemedView style={{ flex: 1 }}>
@@ -24,13 +33,9 @@ export default function SearchResultContainer({
         <Menu menu={menu} setMenu={setMenu} type="event" />
         <Menu menu={menu} setMenu={setMenu} type="user" />
       </View>
-      <Animated.ScrollView showsVerticalScrollIndicator={false}>
-        <View style={styles.content}>
-          {(menu === "all" || menu === "place") && (
-              <PlaceContainer searchResult={searchResult} />
-            )}
-        </View>
-      </Animated.ScrollView>
+      <View style={styles.content}>
+        {(menu === "all" || menu === "place") && <PlaceContainer result={result} />}
+      </View>
     </ThemedView>
   );
 }

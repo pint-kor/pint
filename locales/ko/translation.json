@@ -46,7 +46,17 @@
             "festival": "축제",
             "bar": "바"
         },
-        "searchAtCurrentLocation": "현재 위치에서 검색"
+        "option": {
+            "title": "옵션",
+            "sortoption": "정렬 옵션",
+            "centerlocation": "중심 위치",
+            "accuracy": "정확도순",
+            "distance": "거리순",
+            "my": "내위치중심",
+            "map": "지도 중심"
+        },
+        "searchAtCurrentLocation": "현재 위치에서 검색",
+        "searchMoreAtCurrentLocation": "현재 위치에서 더 불러오기"
     },
     "search": {
         "title": "검색",
@@ -61,5 +71,14 @@
                 "all": "모두"
             }
         }
+    },
+    "blog": {
+        "no-blog": "아직 블로그가 없습니다",
+        "write-first-blog": "첫 글을 작성해보세요"
+    },
+    "profile": {
+        "myposts": "내 게시물",
+        "myposts-empty": "아직 게시물이 없습니다",
+        "myposts-empty-button": "첫 게시물을 작성해보세요"
     }
 }

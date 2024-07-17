@@ -1,20 +1,56 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import axios from "axios";
+import { RootState } from "../store";
+
+const BACKEND_URL = process.env.EXPO_PUBLIC_PINT_BACKEND_URL
 
 export interface UserInterface {
+    state: "idle" | "loading" | "succeeded" | "failed";
     user: {
+        access_token: string;
         username: string;
     } | null;
     history: {
         recentSearch: string[];
     }
+    myPosts: any[];
 }
 
 const initialState: UserInterface = {
+    state: "idle",
     user: null,
     history: {
         recentSearch: [],
-    }
+    },
+    myPosts: [],
 };
+
+export const loginUser = createAsyncThunk(
+    "user/login",
+    async (data: {
+        access_token: string;
+    }, { getState, dispatch }) => {
+        const state = getState() as RootState
+
+        const response = await axios.get(BACKEND_URL + "/users/me", {
+            headers: {
+                Authorization: `Bearer ${data.access_token}`
+            }
+        })
+
+        const { username, email } = response.data
+        dispatch(setUser({
+            access_token: data.access_token,
+            username: username ?? email,
+        }))
+    }
+);
+
+export const fetchMyPosts = createAsyncThunk(
+    "user/fetchMyPosts",
+    async (_, { getState, dispatch }) => {
+    }
+)
 
 export const userSlice = createSlice({
     name: "user",
@@ -25,8 +61,14 @@ export const userSlice = createSlice({
         },
         __development_login: (state) => {
             state.user = {
+                access_token: "dev_token",
                 username: "dev_user",
             }
+        },
+        setUserState: (state, action: {
+            payload: UserInterface["state"];
+        }) => {
+            state.state = action.payload;
         },
         __developement_logout: (state) => {
             state.user = null;
@@ -51,6 +93,6 @@ export const userSlice = createSlice({
     },
 });
 
-export const { setUser, __development_login, __developement_logout, clearRecentSearch, addRecentSearch, removeRecentSearch } = userSlice.actions;
+export const { setUser, __development_login, __developement_logout, setUserState, clearRecentSearch, addRecentSearch, removeRecentSearch } = userSlice.actions;
 
 export default userSlice.reducer;

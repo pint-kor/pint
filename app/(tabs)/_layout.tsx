@@ -1,22 +1,28 @@
-import { Redirect, Tabs, useNavigation, usePathname } from 'expo-router';
+import { Redirect, Tabs } from 'expo-router';
 import React from 'react';
 
 import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 import { Colors } from '@/constants/Colors';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '@/lib/store';
 import { useColorScheme } from '@/hooks/useColorScheme';
+import BackButton from '@/components/BackButton';
+import { Pressable, Text } from 'react-native';
+import { ThemedText } from '@/components/ThemedText';
+import WritePlacePostButton from '@/components/blog/WritePlacePostButton';
+import PlacePostModal from '@/components/blog/PlacePostModal';
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
   const user = useSelector((state: RootState) => state.user);
-  const param = usePathname();
+  const dispatch = useDispatch();
 
   if (!user.user) {
     return <Redirect href="/login" />;
   }
 
   return (
+    <>
     <Tabs
       screenOptions={{
         tabBarActiveTintColor: Colors[colorScheme ?? 'light']?.text,
@@ -24,6 +30,7 @@ export default function TabLayout() {
         tabBarStyle: {
           backgroundColor: Colors[colorScheme ?? 'light']?.background,
           padding: 10,
+          borderWidth: 0,
         },
       }}>
       <Tabs.Screen
@@ -44,6 +51,17 @@ export default function TabLayout() {
           ),
         }}
       />
+      <Tabs.Screen
+        name="post"
+        options={{
+          tabBarButton: ({ children }) => <WritePlacePostButton>{children}</WritePlacePostButton>,
+          title: '',
+          tabBarIcon: ({ color, focused }) => (
+            // Plus
+            <TabBarIcon name={focused ? 'add-circle' : 'add-circle-outline'} color={color} />
+          ),
+        }}
+      />
       <Tabs.Screen 
         name="profile"
         options={{
@@ -54,5 +72,7 @@ export default function TabLayout() {
         }}
       />
     </Tabs>
+    <PlacePostModal />
+    </>
   );
 }

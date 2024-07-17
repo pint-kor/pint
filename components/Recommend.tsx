@@ -1,8 +1,8 @@
 import { Pressable, StyleSheet } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
-import { LinearGradient } from "expo-linear-gradient";
-import { useColorScheme } from "react-native";
+import { LinearGradient } from "expo-linear-gradient";;
 import { useThemeColor } from "@/hooks/useThemeColor";
+import { useColorScheme } from "@/hooks/useColorScheme";
 
 export default function Recommend() {
     const theme = useColorScheme() ?? 'light';

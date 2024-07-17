@@ -1,25 +1,41 @@
 import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
 import { ThemedView } from "../ThemedView";
-import { View, useColorScheme } from "react-native";
+import { Pressable, View } from "react-native";
 import { Colors } from "@/constants/Colors";
 import { ThemedText } from "../ThemedText";
 import { Ionicons } from "@expo/vector-icons";
 import { Link } from "expo-router";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useColorScheme } from "@/hooks/useColorScheme";
+import { useSharedValue } from "react-native-reanimated";
+import axios from "axios";
+import PlacePostBox from "../blog/PlacePostBox";
 
-export default function MapBottomSheet({ place, setPlace }: { place: any, setPlace: (place: any) => void}) {
+export default function PlaceModal({ place, setPlace }: { place: any, setPlace: (place: any) => void}) {
     const colorScheme = useColorScheme() ?? "light";
     const ref = useRef<BottomSheet>(null);
-    const { place_name } = place.place;
+    const { displayName } = place;
+
+    const snapIndex = useSharedValue(0);
+
+    const onPressBottomSheet = () => {
+      if (snapIndex.value === 0) {
+        ref.current?.snapToIndex(1);
+      }
+      else {
+        ref.current?.snapToIndex(0);
+      }
+    }
+
+    useEffect(() => {
+      axios.get("http://192.168.0.59:8000/blog?place_id=" + place.id).then((res) => {
+        console.log(res.data);
+      })
+    }, [place])
 
     return (
       <BottomSheet
-        snapPoints={["30%", "70%"]}
-        style={{
-          marginLeft: "2.5%",
-          marginRight: "2.5%",
-          borderRadius: 100,
-        }}
+        snapPoints={["25%", "70%"]}
         backgroundStyle={{
           backgroundColor: "transparent",
         }}
@@ -28,31 +44,29 @@ export default function MapBottomSheet({ place, setPlace }: { place: any, setPla
         }}
         handleIndicatorStyle={
           {
-            // backgroundColor: "transparent",
+            backgroundColor: "transparent",
           }
         }
-        enablePanDownToClose={true}
-        onClose={() => setPlace(null)}
+        enablePanDownToClose={false}
         ref={ref}
+        animatedIndex={snapIndex}
       >
-        <BottomSheetView style={{ flex: 1, backgroundColor: "transparent" }}>
+        <BottomSheetView style={{ flex: 1, backgroundColor: "transparent" }} >
           <ThemedView
             style={{
               flex: 1,
-              borderRadius: 15,
               backgroundColor: Colors[colorScheme].background,
-              marginBottom: "2%",
             }}
           >
-            <View style={{ padding: 20 }}>
+            <Pressable style={{ padding: 15  }} onPress={onPressBottomSheet}>
               <View style={{ justifyContent: 'space-between', flexDirection: 'row', alignItems: 'center' }}>
                 <ThemedText style={{ fontWeight: 800, fontSize: 13 }}>
-                  {place_name}
+                  {displayName.text}
                 </ThemedText>
-                <Ionicons name="close" size={24} color={Colors[colorScheme].text} onPress={() => ref.current?.close()}/>
+                {/* <Ionicons name="close" size={24} color={Colors[colorScheme].text} onPress={() => ref.current?.close()}/> */}
               </View>
               <ThemedText style={{ fontSize: 10, color: "gray" }}>
-                {place.place.address_name}
+                {place.formattedAddress}
               </ThemedText>
               <View
                 style={{ flexDirection: "row", alignItems: "center", gap: 5 }}
@@ -63,15 +77,16 @@ export default function MapBottomSheet({ place, setPlace }: { place: any, setPla
                   size={16}
                   color={Colors[colorScheme].text}
                 />
-                <Link href={place.place.place_url} target="_blank">
+                <Link href={""} target="_blank">
                   <ThemedText
                     style={{ fontSize: 10, color: Colors[colorScheme].text }}
                   >
-                    {place.place.place_url}
+                    {place.place_url}
                   </ThemedText>
                 </Link>
               </View>
-            </View>
+              <PlacePostBox />
+            </Pressable>
           </ThemedView>
         </BottomSheetView>
       </BottomSheet>

@@ -5,6 +5,10 @@ import { useTranslation } from "react-i18next";
 import { Animated, Pressable, StyleSheet, View } from "react-native";
 import { ThemedText } from "../ThemedText";
 import { useColorScheme } from "@/hooks/useColorScheme";
+import { useDispatch } from "react-redux";
+import { searchWithProperties, setIsOpenFilterModal, setIsOpenSearchModal, setSearchProperties } from "@/lib/features/search";
+import { AppDispatch } from "@/lib/store";
+import { router } from "expo-router";
 
 type CategoryCodeType = {
     [key: string]: string
@@ -20,8 +24,9 @@ export const CategoryCodes: CategoryCodeType = {
     //"bar": "?" // No code
 }
 
-export default function SearchFilter({ filters, setFilter }: { filters: string[], setFilter: (filter: string[]) => void })  {
+export default function SearchFilter()  {
     const { t } = useTranslation();
+    const dispatch = useDispatch<AppDispatch>();
 
     const styles = useMemo(() => {
         return StyleSheet.create({
@@ -35,26 +40,28 @@ export default function SearchFilter({ filters, setFilter }: { filters: string[]
     }, [])
 
     const onPress = (filter: string) => {
-        if (filters.includes(filter)) {
-            setFilter(filters.filter(f => f !== filter));
-        } else {
-            setFilter([...filters, filter]);
-        }
-    }
+      const categoryCode = CategoryCodes[filter] ?? "";
+      if (categoryCode === "") return;
 
-    const isInFilter = useCallback((filter: string) => filters.includes(filter), [filters])
+      dispatch(setSearchProperties({
+        searchKeyword: categoryCode,
+        searchType: "category"
+      }))
+      dispatch(searchWithProperties());
+      dispatch(setIsOpenSearchModal(true));
+    }
 
     return (
       <Animated.ScrollView horizontal showsHorizontalScrollIndicator={false}>
         <View style={styles.searchFilterContainer}>
-          <FilterTag isMenu title={t("map.filter.title")} />
-          <FilterTag title={t("map.filter.cafe")} onPress={() => onPress("cafe")} enabled={isInFilter("cafe")} />
-          <FilterTag title={t("map.filter.restaurant")} onPress={() => onPress("restaurant")} enabled={isInFilter("restaurant")} />
-          <FilterTag title={t("map.filter.accomodation")} onPress={() => onPress("accomodation")} enabled={isInFilter("accomodation")} />
-          <FilterTag title={t("map.filter.attraction")} onPress={() => onPress("attraction")} enabled={isInFilter("attraction")} />
-          <FilterTag title={t("map.filter.shopping")} onPress={() => onPress("shopping")} enabled={isInFilter("shopping")} />
-          <FilterTag title={t("map.filter.culture")} onPress={() => onPress("culture")} enabled={isInFilter("culture")} />
-          <FilterTag title={t("map.filter.bar")} onPress={() => onPress("bar")} enabled={isInFilter("bar")} />
+          <FilterTag isMenu title={t("map.filter.title")} onPress={() => dispatch(setIsOpenFilterModal(true))} />
+          <FilterTag title={t("map.filter.cafe")} onPress={() => onPress("cafe")} />
+          <FilterTag title={t("map.filter.restaurant")} onPress={() => onPress("restaurant")} />
+          <FilterTag title={t("map.filter.accomodation")} onPress={() => onPress("accomodation")} />
+          <FilterTag title={t("map.filter.attraction")} onPress={() => onPress("attraction")} />
+          <FilterTag title={t("map.filter.shopping")} onPress={() => onPress("shopping")} />
+          <FilterTag title={t("map.filter.culture")} onPress={() => onPress("culture")} />
+          <FilterTag title={t("map.filter.bar")} onPress={() => onPress("bar")} />
         </View>
       </Animated.ScrollView>
     );

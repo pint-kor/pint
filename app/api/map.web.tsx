@@ -1,5 +1,5 @@
 import { ThemedView } from "@/components/ThemedView";
-import KakaoMap from "@/components/map/KakaoMap";
+import PintMap from "@/components/map/PintMap";
 import { Stack, useNavigation } from "expo-router";
 import { useEffect } from "react";
 
@@ -14,7 +14,7 @@ export default function Map() {
 
     return (
       <ThemedView style={{ flex: 1 }}>
-        <KakaoMap />
+        <PintMap />
       </ThemedView>
     );
 }

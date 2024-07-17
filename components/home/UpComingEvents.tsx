@@ -6,9 +6,13 @@ import { router } from "expo-router";
 import ContentLoader, { Rect, Circle, Instagram } from "react-content-loader/native";
 import ShowAll from "./ShowAll";
 import { SkeletonLoader } from "../SkeletonLoader";
+import { useSelector } from "react-redux";
+import { RootState } from "@/lib/store";
+import EventMain from "../upcomingevent/EventMain";
 
 export default function UpComingEvents() {
     const { t } = useTranslation();
+    // const { fulfilled, loading } = useSelector((state: RootState) => state.event);
 
     return (
       <View>
@@ -19,7 +23,8 @@ export default function UpComingEvents() {
           }
         />
         <View style={styles.eventContainer}>
-          <EventComponent />
+          {/* {loading && <EventComponent />}
+          {fulfilled && <EventMain />} */}
         </View>
       </View>
     );

@@ -1,8 +1,9 @@
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import AuthButton from "@/components/auth/KakaoAuthButton";
-import KakaoLoginPage from "@/components/auth/KakaoLoginPage";
+import KakaoLoginPage from "@/components/auth/KakaoLoginModal";
 import ProfileCircle from "@/components/user/ProfileCircle";
+import ProfileMyPostsContainer from "@/components/user/ProfileMyPostsContainer";
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { signOut } from "@/lib/features/auth";
@@ -44,11 +45,12 @@ export default function Profile() {
           </View>
           {/* <Button title="Logout" onPress={logout} /> */}
         </View>
-        <View style={{flex: 3, justifyContent: 'flex-start'}}/>
+        <ProfileMyPostsContainer />
+        {/* <View style={{flex: 3, justifyContent: 'flex-start'}}/>
 
         <View style={{flex: 1, }}/>
 
-        <View style={{flex: 1, justifyContent: 'flex-end'}}/>
+        <View style={{flex: 1, justifyContent: 'flex-end'}}/> */}
       </ThemedView>
     );
 }

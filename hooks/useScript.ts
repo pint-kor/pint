@@ -11,7 +11,6 @@ export default function useScript(src: string) {
       script = document.createElement("script");
       script.src = src;
       script.async = true;
-      console.log(script)
     }
 
     const handleLoad = () => setLoading(false);

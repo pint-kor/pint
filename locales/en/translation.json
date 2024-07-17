@@ -46,7 +46,17 @@
             "festival": "Festival",
             "bar": "Bar"
         },
-        "searchAtCurrentLocation": "Search at current location"
+        "option": {
+            "title": "Option",
+            "sortoption": "Sort Option",
+            "centerlocation": "Center Location",
+            "accuracy": "By Accuracy",
+            "distance": "By Distance",
+            "my": "My Location",
+            "map": "Map"
+        },
+        "searchAtCurrentLocation": "Search at current location",
+        "searchMoreAtCurrentLocation": "Search more at current location"
     },
     "search": {
         "title": "Search",
@@ -61,5 +71,14 @@
                 "all": "All"
             }
         }
+    },
+    "blog": {
+        "no-blog": "No blog yet",
+        "write-first-blog": "Write your first blog"
+    },
+    "profile": {
+        "myposts": "My Posts",
+        "myposts-empty": "No posts yet",
+        "myposts-empty-button": "Write your first post"
     }
 }
