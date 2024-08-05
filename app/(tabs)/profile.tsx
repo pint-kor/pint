@@ -7,9 +7,11 @@ import ProfileMyPostsContainer from "@/components/user/ProfileMyPostsContainer";
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { signOut } from "@/lib/features/auth";
-import { RootState } from "@/lib/store";
+import { fetchUserInfo } from "@/lib/features/user";
+import { AppDispatch, RootState } from "@/lib/store";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
+import { useEffect } from "react";
 import { Button, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useDispatch, useSelector } from "react-redux";
@@ -18,7 +20,7 @@ export default function Profile() {
     const colorScheme = useColorScheme();
     const insets = useSafeAreaInsets();
     const user = useSelector((state: RootState) => state.user)
-    const dispatch = useDispatch()
+    const dispatch = useDispatch<AppDispatch>()
 
     const logout = () => {
         dispatch(signOut())
@@ -29,6 +31,14 @@ export default function Profile() {
         router.push("/settings")
     }
 
+    const handleFetchMyInfo = () => {
+      dispatch(fetchUserInfo())
+    }
+
+    useEffect(() => {
+      handleFetchMyInfo();
+    }, [])
+
     return (
       <ThemedView style={{ flex: 1, paddingTop: insets.top, padding: 20, gap: 20 }}>
         <View style={{ flexDirection: "row", justifyContent: "flex-end", paddingTop: 10,}}>
@@ -38,7 +48,7 @@ export default function Profile() {
           <ProfileCircle onPress={() => console.log('hi')}/>
           <View style={{flexDirection: 'column', justifyContent: 'center'}}>
             {user.user ? (
-                <ThemedText style={{fontSize: 16, fontWeight: '500'}}>{user.user?.username}</ThemedText>
+                <ThemedText style={{fontSize: 16, fontWeight: '500'}}>{user.user?.email}</ThemedText>
                 ) : (
                 <ThemedText type="defaultSemiBold">로그인이 필요합니다</ThemedText>
             )}

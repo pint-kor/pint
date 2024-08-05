@@ -1,27 +1,35 @@
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
-import { useMemo } from "react";
-import { View, TextInput, StyleSheet, Button } from "react-native";
+import { RootState } from "@/lib/store";
+import { useMemo, useState } from "react";
+import { TextInput, StyleSheet, Button, Pressable, Text, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard, Dimensions, View } from "react-native";
+import { useSelector } from "react-redux";
 
-export default function PostTextField() {
+export default function PostTextField({ setActive }: { setActive: (active: boolean) => void }) {
     const colorScheme = useColorScheme() ?? "light";
+    const { currentPost: { content }} = useSelector((state: RootState) => state.post)
 
     const styles = useMemo(() => StyleSheet.create({
         textInput: {
             color: Colors[colorScheme].text,
-            height: 200,
+            width: "90%",
+            height: 100,
+            marginTop: 20,
         }
     }), [colorScheme])
 
     return (
-        <View style={{paddingHorizontal: 15 }}>
-            <TextInput 
-                editable
-                multiline
-                placeholder="test"
-                style={styles.textInput}
-            />
-            <Button title="hi" color="white" />
-        </View>
-    )
+      <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center' }}>
+        <TextInput
+          editable
+          multiline
+          placeholder="test"
+          style={styles.textInput}
+          value={content}
+          onFocus={() => setActive(true)}
+        />
+      </View>
+    );
+
+    
 }

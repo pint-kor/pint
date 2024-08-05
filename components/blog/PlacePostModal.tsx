@@ -35,6 +35,11 @@ export default function PlacePostModal() {
         }
     }), [colorScheme])
 
+    const handlePressWritePost = () => {
+        dispatch(setIsPostModalOpen(false))
+        router.push("/post")
+    }
+
     return (
       <>
         {/* Background drop */}
@@ -66,7 +71,7 @@ export default function PlacePostModal() {
           }}
         >
           <BottomSheetView>
-            <Pressable style={styles.container} onPress={() => router.push("/post")}>
+            <Pressable style={styles.container} onPress={handlePressWritePost}>
               {/* write icon */}
               <Ionicons name="add" size={24} color={Colors[colorScheme].text} />
               {/* write text */}

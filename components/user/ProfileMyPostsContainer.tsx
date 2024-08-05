@@ -1,19 +1,31 @@
 import { Dimensions, Pressable, ScrollView, View } from "react-native";
 import { ThemedText } from "../ThemedText";
 import { useTranslation } from "react-i18next";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { Colors } from "@/constants/Colors";
 import { Ionicons } from "@expo/vector-icons";
 import ProfileMyPosts from "./ProfileMyPosts";
 import ProfileLikes from "./ProfileLikes";
 import ProfileBookmarks from "./ProfileBookmarks";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "@/lib/store";
+import { fetchUserInfo } from "@/lib/features/user";
 
 export default function ProfileMyPostsContainer() {
     const { t } = useTranslation();
     const [menu, setMenu] = useState<"myposts" | "likes" | "bookmarks">("myposts")
     const colorScheme = useColorScheme() ?? "light";
     const scrollRef = useRef<ScrollView>(null);
+    const dispatch = useDispatch<AppDispatch>();
+
+    useEffect(() => {
+        dispatch(fetchUserInfo());
+    }, []);
+
+    const handleFetchMyInfo = () => {
+        dispatch(fetchUserInfo())
+    }
 
     const menuColor = (target: "myposts" | "likes" | "bookmarks") => {
         return menu === target ? Colors[colorScheme].text : 'transparent'
@@ -44,6 +56,9 @@ export default function ProfileMyPostsContainer() {
                 <Pressable style={{ padding: 5, borderBottomWidth: 3, borderBottomColor: menuColor("bookmarks") }} onPress={() => onPress("bookmarks")}>
                     <Ionicons name="bookmark" size={24} color={Colors[colorScheme].text} />
                 </Pressable>
+                <View style={{ flex: 1, justifyContent: 'flex-end', flexDirection: 'row' }}>
+                    <Ionicons name="refresh" size={24} color={Colors[colorScheme].text} onPress={handleFetchMyInfo} />
+                </View>
             </View>
             <ScrollView horizontal showsHorizontalScrollIndicator={false} pagingEnabled onMomentumScrollEnd={onScroll} ref={scrollRef} style={{
                 height: 500,

@@ -40,7 +40,7 @@ function HotPlaceLoader() {
   const height = 200;
 
   return (
-    <SkeletonLoader>
+    <SkeletonLoader height={height}>
       <Rect x="0" y="0" rx="5" ry="5" width={width} height={height} />
     </SkeletonLoader>
   )

@@ -31,6 +31,15 @@
         "hotplace": {
             "title": "Hot Place",
             "showall": "Show All"
+        },
+        "current-location": {
+            "title": "Map / Current Location"
+        },
+        "menu": {
+            "notification": "Notification",
+            "blog": "Blog",
+            "ai-plan": "AI Planner",
+            "emergency": "Emergency"
         }
     },
     "map": {
@@ -74,7 +83,15 @@
     },
     "blog": {
         "no-blog": "No blog yet",
-        "write-first-blog": "Write your first blog"
+        "write-first-blog": "Write your first blog",
+        "attach-photo": "Attach Photo",
+        "edit-blog": "Edit",
+        "ask-delete": "Do you really want to delete?",
+        "delete": "Delete",
+        "cancel": "Cancel",
+        "success-delete": "Successfully deleted",
+        "fail-delete": "Failed to delete"
+        
     },
     "profile": {
         "myposts": "My Posts",

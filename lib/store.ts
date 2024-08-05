@@ -6,6 +6,7 @@ import searchReducer from '@/lib/features/search';
 import eventReducer from '@/lib/features/event';
 import mapReducer from '@/lib/features/map';
 import postReducer from '@/lib/features/post';
+import mainReducer from '@/lib/features/main';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getLocales } from "expo-localization";
 
@@ -17,6 +18,7 @@ const rootReducer = combineReducers({
     map: mapReducer,
     event: eventReducer,
     post: postReducer,
+    main: mainReducer,
 })
 
 export const store = configureStore({

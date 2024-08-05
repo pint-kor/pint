@@ -17,7 +17,7 @@ export default function TabLayout() {
   const user = useSelector((state: RootState) => state.user);
   const dispatch = useDispatch();
 
-  if (!user.user) {
+  if (user.user.userId === '') {
     return <Redirect href="/login" />;
   }
 

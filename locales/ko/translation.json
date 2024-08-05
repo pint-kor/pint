@@ -31,6 +31,15 @@
         "hotplace": {
             "title": "핫 플레이스",
             "showall": "모두 보기"
+        },
+        "current-location": {
+            "title": "지도 / 현재 위치"
+        },
+        "menu": {
+            "notification": "알림",
+            "blog": "블로그",
+            "ai-plan": "AI 플래너",
+            "emergency": "응급"
         }
     },
     "map": {
@@ -74,7 +83,14 @@
     },
     "blog": {
         "no-blog": "아직 블로그가 없습니다",
-        "write-first-blog": "첫 글을 작성해보세요"
+        "write-first-blog": "첫 글을 작성해보세요",
+        "attach-photo": "사진 첨부",
+        "edit-blog": "수정하기",
+        "ask-delete": "정말 삭제하시겠습니까?",
+        "delete": "삭제",
+        "cancel": "취소",
+        "success-delete": "성공적으로 삭제되었습니다",
+        "fail-delete": "삭제에 실패했습니다"
     },
     "profile": {
         "myposts": "내 게시물",

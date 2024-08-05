@@ -1,6 +1,7 @@
 import LoadingComponent from "@/components/LoadingComponent";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
+import DevAuthButton from "@/components/auth/DevAuthButton";
 import KakaoAuthButton from "@/components/auth/KakaoAuthButton";
 import KakaoLoginPage from "@/components/auth/KakaoLoginModal";
 import { __development_login } from "@/lib/features/user";
@@ -29,9 +30,7 @@ export default function Login() {
     return (
         <ThemedView style={{flex: 1, paddingTop: insets.top, alignItems: 'center', justifyContent: 'center'}}>
             {state === "loading" && <LoadingComponent />}
-            <Pressable onPress={devLogin}>
-                <ThemedText type="title">임시 로그인</ThemedText>
-            </Pressable>
+            <DevAuthButton />
             <KakaoAuthButton />
             {/* <Pressable onPress={() => setKakaoModal(true)}>
                 <ThemedText type="title">Kakao Login</ThemedText>
